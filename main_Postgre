@@ -1,0 +1,106 @@
+import psycopg2
+
+
+def create_tables():
+    commands = (
+        """
+       CREATE TABLE students (
+               student_id serial PRIMARY KEY NOT NULL, 
+               student_name character varying(100) NOT NULL, 
+               gpa numeric(10, 2), 
+               birth timestamp with time zone)
+               )
+        """,
+        """ CREATE TABLE course (
+                course_id SERIAL PRIMARY KEY NOT NULL,
+                course_name character varying(100) NOT NULL
+              
+        """,
+        """ CREATE TABLE course_students (
+                        student_id INTEGER NOT NULL,
+                        course_id INTEGER NOT NULL,
+                        PRIMARY KEY (student_id , course_id)
+        """
+    )
+    conn = None
+    try:
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        for command in commands:
+           cur.execute(command)
+        cur.close()
+        conn.commit()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+
+
+def add_student(student_name):
+    sql = """INSERT INTO students(student_name)
+             INSERT INTO students(gpa)
+             VALUES(%s) RETURNING student_id"""
+    conn = None
+    student_id = None
+    try:
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute(sql, (student_name,))
+        student_id = cur.fetchone()[0]
+        conn.commit()
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+    return student_id
+
+
+def add_students():
+    sql = """INSERT INTO students(student_id) 
+             INSERT INTO course(course_id)
+             VALUES(%s, %s)
+             """, (1, 1)
+    conn = None
+    course_name = list_course
+    student_name = list_student
+    try:
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.executemany(sql, student_name, course_name)
+        conn.commit()
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+
+
+def get_students():
+    conn = None
+    try:
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute("""select student_id, student_name, course_name 
+        from student_course sc join student s on 
+        s.id = sc.student_id join course c on c.id = sc.course_id """)
+        row = cur.fetchall()
+        while row is not None:
+            print(row)
+            row = cur.fetchone()
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+
+
+if __name__ == '__main__':
+    params = "host=localhost dbname= user=postgres password="
+    list_course = []
+    list_student = []
+    pass
