@@ -17,7 +17,6 @@ class Contact:
             self.Info = kwargs
         else:
             self.Info = {}
-        print(args, kwargs)
 
     def __str__(self):
         '''Определяет поведение функции str(), вызванной для экземпляра класса.'''
@@ -93,10 +92,6 @@ class PhoneBook(object):
                     print('Найдена запись:')
                     print(ii)
 
-
-def grouper(iterable, n):
-    return [iterable[i:i + n] for i in range(0, len(iterable), n)]
-
 def adv_print(*args, **kwargs):
     #(self, *args, sep=' ', end='\n', file=None):  # known special case of print
     """
@@ -161,24 +156,24 @@ if __name__ == '__main__':
     print(jhon)
     # 2
     book = PhoneBook('Телефонная книга №1')
-    #book.print_book()
+    book.print_book()
     jhon = Contact('Jhon', 'Smith', '+71234567809', telegram='@jhony', email='jhony@smith.com')
     book.add_abonent(jhon)
-    #book.print_book()
+    book.print_book()
     jhon = Contact('Robert', 'Smith', '+71234507809', False, icq='@jhony',telegram='@jhony', email='jhony@smith.com')
     book.add_abonent(jhon)
     jhon = Contact('Ivan', 'Smith', '+70234567809', True, telegram='@jhony', email='jhony@smith.com')
     book.add_abonent(jhon)
-    #book.print_book()
+    book.print_book()
     # Удаление контакта по номеру телефона;
     book.del_abonent('+70234567809')
-    #book.print_book()
+    book.print_book()
     # Поиск всех избранных номеров
-    #book.search_star()
+    book.search_star()
     # Поиск контакта по имени и фамилии
-    # book.search_abonent('Robert', 'Smith')
+    book.search_abonent('Robert', 'Smith')
     book.search_abonent('Robet', 'Smith')
-
+    # 3
     print('111 ', '2 ', '3 ', '4 ', '5 ', sep='.', end='---', flush=True, file=open("output.txt", "a"))
     print('')
     adv_print('222 ', '2 ', '3 ', '4 ', '5 ', sep='.', end='---', flush=True,
