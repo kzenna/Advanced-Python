@@ -14,10 +14,10 @@ class Contact:
         else:
             self.Star = args[3]
         if kwargs != "":
-            # print('!=')
             self.Info = kwargs
         else:
             self.Info = {}
+        print(args, kwargs)
 
     def __str__(self):
         '''Определяет поведение функции str(), вызванной для экземпляра класса.'''
@@ -41,6 +41,7 @@ class Contact:
 
 class PhoneBook(object):
     '''Базовая телефонная книга'''
+
     def __init__(self, name):
         self.Name = name
         self.abonents = []
@@ -93,6 +94,63 @@ class PhoneBook(object):
                     print(ii)
 
 
+def grouper(iterable, n):
+    return [iterable[i:i + n] for i in range(0, len(iterable), n)]
+
+def adv_print(*args, **kwargs):
+    #(self, *args, sep=' ', end='\n', file=None):  # known special case of print
+    """
+    Собственная реализация функции print
+    print(value, ..., sep=' ', end='\n', file=sys.stdout, flush=False, start='', max_line=80)
+    sep - разделитель между выводимыми значениями (по умолчанию - пробел)
+    end - символ, которым заканчивается вывод (по умолчанию - символ новой строки)
+    file - file-like объект, в который мы можем перенаправить вывод, который по умолчанию производится в sys.stdout
+    flush: whether to forcibly flush the stream.
+    start - с чего начинается вывод. По умолчанию пустая строка;
+    max_line - максимальная длин строки при выводе.
+               Если строка превыщает max_line, то вывод автоматически переносится на новую строку;
+               10 - по-умолчанию
+    in_file - аргумент, определяющий будет ли записан вывод ещё и в файл
+    """
+    return_str = ''
+    sep_new = ' '
+    end_new = ''
+    file_new = None
+    flush_new = False
+    start_new = ''
+    max_line_new = 10
+    in_file_new = None
+    # Разбор доп параметров и установка значений по-умолчанию
+    if kwargs != "":
+        for key, value in kwargs.items():
+            if key == 'sep':
+                sep_new = value
+            if key == 'end':
+                end_new = value
+            if key == 'flush':
+                flush_new = value
+            if key == 'start':
+                start_new = value
+            if key == 'max_line':
+                max_line_new = value
+            if key == 'in_file':
+                in_file_new = value
+    return_str += start_new
+    for i in range(0, len(args)):
+        return_str += args[i]+sep_new
+    return_str += end_new
+    if max_line_new < len(return_str):
+        temp = [return_str[i:i + max_line_new] for i in range(0, len(return_str), max_line_new)]
+        for ii in range(0, len(temp)):
+            print(temp[ii], sep='', end='\n', flush=flush_new)
+            if in_file_new is None:
+                print(temp[ii], sep='', end='\n', flush=flush_new, file=in_file_new)
+    else:
+        print(return_str, sep='', end='\n', flush=flush_new)
+        if in_file_new is None:
+            print(return_str, sep='', end='\n', flush=flush_new, file=in_file_new)
+
+
 if __name__ == '__main__':
     # 1
     jhon = Contact('Jhon', 'Smith', '+71234567809', telegram='@jhony', email='jhony@smith.com')
@@ -103,22 +161,25 @@ if __name__ == '__main__':
     print(jhon)
     # 2
     book = PhoneBook('Телефонная книга №1')
-    book.print_book()
+    #book.print_book()
     jhon = Contact('Jhon', 'Smith', '+71234567809', telegram='@jhony', email='jhony@smith.com')
     book.add_abonent(jhon)
-    book.print_book()
+    #book.print_book()
     jhon = Contact('Robert', 'Smith', '+71234507809', False, icq='@jhony',telegram='@jhony', email='jhony@smith.com')
     book.add_abonent(jhon)
     jhon = Contact('Ivan', 'Smith', '+70234567809', True, telegram='@jhony', email='jhony@smith.com')
     book.add_abonent(jhon)
-    book.print_book()
+    #book.print_book()
     # Удаление контакта по номеру телефона;
     book.del_abonent('+70234567809')
-    book.print_book()
-    jhon = Contact('Ivan', 'Smith', '+70234567809', True, telegram='@jhony', email='jhony@smith.com')
-    book.add_abonent(jhon)
+    #book.print_book()
     # Поиск всех избранных номеров
-    book.search_star()
+    #book.search_star()
     # Поиск контакта по имени и фамилии
-    book.search_abonent('Robert', 'Smith')
+    # book.search_abonent('Robert', 'Smith')
     book.search_abonent('Robet', 'Smith')
+
+    print('111 ', '2 ', '3 ', '4 ', '5 ', sep='.', end='---', flush=True, file=open("output.txt", "a"))
+    print('')
+    adv_print('222 ', '2 ', '3 ', '4 ', '5 ', sep='.', end='---', flush=True,
+              start='!', max_line=10, in_file=open("output.txt", "a"))
