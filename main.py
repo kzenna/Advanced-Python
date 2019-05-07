@@ -1,66 +1,59 @@
-# Домашнее задание к лекции
-# ««Decorators»»
+# Домашнее задание к лекции 1.5
+# «PEP8 и PEP»
 #
-# Кокурникова Лилия Фаритовна, 02.05.19
+# Кокурникова Лилия Фаритовна, 22.04.19
 #
-import time
-import datetime
-import logging
+
+import email
+import smtplib
+import imaplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+GMAIL_SMTP = "smtp.gmail.com"
+GMAIL_IMAP = "imap.gmail.com"
+PORT_SMTP = 587
 
 
-def my_log(func):
-    def wrapper(self, *argv, **kwargv):
-        logging.basicConfig(filename='myapp.log', level=logging.INFO)
-        logging.info(func.__doc__)
-        return func(self, *argv, **kwargv)
-    return wrapper
+class EmailSendReceive:
+    def __init__(self, login_mail, password):
+        self.login_mail = login_mail
+        self.password = password
 
+    def send_email(self, adress_to, subject, message):
+        msg = MIMEMultipart()
+        msg['From'] = login_mail
+        msg['To'] = adress_to
+        msg['Subject'] = subject
+        msg.attach(MIMEText(message))
+        ms = smtplib.SMTP(GMAIL_SMTP, PORT_SMTP)
+        ms.ehlo()
+        ms.starttls()
+        ms.ehlo()
+        ms.login(login_mail, password)
+        ms.sendmail(login_mail, ms, msg.as_string())
+        ms.quit()
 
-def func_detail(func):
-    def func_wrapper(*args, **kwargs):
-        print(time.time())
-        print(datetime.datetime.now())
-        print(func.__name__)
-        print(*args)
-        print(kwargs)
-        return func(*args, **kwargs)
-    return func_wrapper
+    def receive_email(self):
+        mail = imaplib.IMAP4_SSL(GMAIL_IMAP)
+        mail.login(login_mail, password)
+        mail.list()
+        mail.select("inbox")
+        criterion = '(HEADER Subject "%s")' % header if header else 'ALL'
+        result, data = mail.uid('search', None, criterion)
+        assert (data[0]), "There are no letters with current header"
+        latest_email_uid = data[0].split()[-1]
+        result, data = mail.uid('fetch', latest_email_uid, '(RFC822)')
+        raw_email = data[0][1]
+        _ = email.message_from_string(raw_email)
+        mail.logout()
 
-#Второе задание
-def decorator(path):
-    def my_log(func):
-        def wrapper(self, *argv, **kwargv):
-            logging.basicConfig(filename=path, level=logging.INFO)
-            logging.info(func.__doc__)
-            return func(self, *argv, **kwargv)
-        return wrapper
-    return my_log
 
 if __name__ == '__main__':
-    n = 2
-    path = 'myapp.log'
-    @my_log
-    @func_detail
-    def my_function(n):
-        if n == 0:
-            return 0
-        elif n == 1:
-            return 1
-        elif n == 2:
-            return 1
-        else:
-            return my_function(n - 1) + my_function(n - 2)
-
-#Второе задание
-    @decorator
-    @func_detail
-    def my_function(n):
-        if n == 0:
-            return 0
-        elif n == 1:
-            return 1
-        elif n == 2:
-            return 1
-        else:
-            return my_function(n - 1) + my_function(n - 2)
-
+    login_mail = 'login@gmail.com'
+    password = 'qwerty'
+    subject = 'Subject'
+    recipients = ['vasya@email.com', 'petya@email.com']
+    message = 'Message'
+    header = None
+    EmailSendReceive(login_mail, password)
